@@ -33,13 +33,17 @@ const int END = -6;
 
 uint32_t color = (uint32_t)0x00FF00; // RRGGBB
 
-const char *WORDS[5] = {
-  "one",
-  "two",
-  "three",
-  "four",
-  "five"
+char *WORDS[5] = {
+    "one",
+    "two",
+    "three",
+    "four",
+    "five"
 };
+
+int queue[256] = {};
+int lastAdded = 0;
+int lastRead = 0;
 
 /*
     Words.
@@ -55,11 +59,6 @@ int buffer[2][2] = {
 */
 
 void pins() {
-
-    /*
-        More words.
-    */
-
     Rb.init();
 }
 
@@ -68,6 +67,12 @@ void pins() {
 */
 
 void render() {
+    
+    if (buffer[0][0] == EMPTY) {
+        buffer[0][0] = getNextFromQueue();
+    } else if (buffer[1][0] == EMPTY && buffer[0][1] == 0) {
+        buffer[1][0] = getNextFromQueue();
+    }
 
     if (buffer[0][1] == END) {
         buffer[0][0] = EMPTY;
@@ -99,32 +104,34 @@ void render() {
 */
 
 void setup() {
-
-    /*
-        Setup the pins to use for morse code output.
-    */
-
     pins();
-
-    /*
-        Listen for incoming data on the serial port.
-    */
-
     Serial.begin(9600);
-    
-    buffer[0][0] = 65; // A
+    addStringToQueue("Hello");
 }
 
-void sendString() {
-  
+int getNextFromQueue() {
+    if (lastAdded == lastRead) {
+        return 0;
+    }
+    lastRead++;
+    if (lastRead >= 256) {
+        lastRead = 0;
+    }
+    return queue[lastRead];
 }
 
-void sendChar(char c) {
-  if (buffer[0][0] == EMPTY) {
-      buffer[0][0] = c;
-  } else if (buffer[1][0] == EMPTY && buffer[0][1] == 0) {
-      buffer[1][0] = c;
-  }
+void addCharToQueue(char c) {
+    lastAdded++;
+    if (lastAdded >= 256) {
+        lastAdded = 0;
+    }
+    queue[lastAdded] = c;
+}
+
+void addStringToQueue(char *string) {
+    for(int i = 0; i < strlen(string); i++) {
+        addCharToQueue(string[i]);
+    }
 }
 
 /*
@@ -132,16 +139,12 @@ void sendChar(char c) {
 */
 
 void loop() {
-
     if (Serial.available() > 0) {
-        sendChar(Serial.read());
+        addCharToQueue(Serial.read());
     }
-
     if (false) {
-       int r = rand() % 4;
-       Serial.write(WORDS[r]);
-       delay(3000);
+        int r = rand() % 4;
+        addStringToQueue(WORDS[r]);
     }
-
     render();
 }
