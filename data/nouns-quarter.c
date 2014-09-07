@@ -1,4 +1,4 @@
-char WORDS[584] = {
+char *WORDS[584] = {
     "aardvark",
     "account",
     "acrylic",
