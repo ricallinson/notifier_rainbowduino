@@ -36,14 +36,104 @@ int queue[256] = {};
 int lastAdded = 0;
 int lastRead = 0;
 
-int randomWordInterval = 30000;
+int randomWordIntervalCounter = 0;
 
-char *WORDS[5] = {
-    "aardvark",
-    "account",
-    "acrylic",
-    "activity",
-    "addition"
+const int WORD_COUNT = 93;
+char *WORDS[94] = {
+    "AARDVARK",
+    "AFTERMATH",
+    "ALUMINIUM",
+    "APPEAL",
+    "ASHTRAY",
+    "BABY",
+    "BANKBOOK",
+    "BEAM",
+    "BELT",
+    "BLIZZARD",
+    "BOUNDARY",
+    "BROCHURE",
+    "BUSH",
+    "CANDLE",
+    "CASE",
+    "CENTIMETER",
+    "CHEST",
+    "CITIZENSHIP",
+    "COAST",
+    "COMMA",
+    "COPPER",
+    "CRATE",
+    "CUB",
+    "DAMAGE",
+    "DEER",
+    "DIBBLE",
+    "DISTRIBUTOR",
+    "DRAW",
+    "EAR",
+    "EMPLOYER",
+    "EXAMINATION",
+    "FANG",
+    "FICTION",
+    "FLOCK",
+    "FOUNTAIN",
+    "GALLEY",
+    "GHANA",
+    "GOVERNMENT",
+    "GROUP",
+    "HANDBALL",
+    "HELEN",
+    "HOPE",
+    "IDEA",
+    "INTESTINE",
+    "JEEP",
+    "KAMIKAZE",
+    "KNEE",
+    "LAURA",
+    "LILAC",
+    "LOOK",
+    "MAILBOX",
+    "MASCARA",
+    "MEXICO",
+    "MOAT",
+    "MUSCLE",
+    "NIC",
+    "OATMEAL",
+    "ORANGE",
+    "PAIN",
+    "PARK",
+    "PEANUT",
+    "PHARMACIST",
+    "PLACE",
+    "POLICE",
+    "PRECIPITATION",
+    "PSYCHIATRIST",
+    "QUICKSAND",
+    "RANGE",
+    "REMINDER",
+    "RIVER",
+    "RUGBY",
+    "SARDINE",
+    "SCREW",
+    "SEPTEMBER",
+    "SHOE",
+    "SISTER-IN-LAW",
+    "SNOW",
+    "SOUTH AFRICA",
+    "SPROUT",
+    "STEP-FATHER",
+    "STOVE",
+    "SUNSHINE",
+    "SYCAMORE",
+    "TEAM",
+    "THOUGHT",
+    "TOE",
+    "TRANSMISSION",
+    "TULIP",
+    "UNDERWEAR",
+    "VEST",
+    "WALRUS",
+    "WHEEL",
+    "WOMEN",
+    "YOKE"
 };
 
 int buffer[2][2] = {
@@ -94,14 +184,22 @@ void render() {
 void setup() {
     pins();
     Serial.begin(9600);
-    addStringToQueue("Hello");
-    timer.setInterval(randomWordInterval, randomWords);
+    addStringToQueue("HELLO");
+    timer.setInterval(10000, randomWords);
 }
 
 void randomWords() {
-    int r = rand() % 4;
-    addStringToQueue(WORDS[r]);
-    Serial.write(WORDS[r]);
+    // Because the interval timer doesn't seem to work after 30 seconds
+    // the code counts down in 10 second intervals.
+    if (randomWordIntervalCounter == 60) {
+        addStringToQueue(WORDS[rand() % WORD_COUNT]);
+        addStringToQueue(" ");
+        addStringToQueue(WORDS[rand() % WORD_COUNT]);
+        addStringToQueue(" ");
+        addStringToQueue(WORDS[rand() % WORD_COUNT]);
+        randomWordIntervalCounter = 0;
+    }
+    randomWordIntervalCounter++;
 }
 
 int getNextFromQueue() {
