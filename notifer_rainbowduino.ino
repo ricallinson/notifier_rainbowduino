@@ -31,6 +31,7 @@ const int START = 7;
 const int END = -6;
 
 uint32_t color = (uint32_t)0x00FF00; // RRGGBB
+//int color = 100; // Color for Telegraphy III as it's wiring is messed up.
 
 int queue[256] = {};
 int lastAdded = 0;
